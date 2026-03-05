@@ -1,47 +1,103 @@
-# React + Vite
+# APV — Administrador de Pacientes de Veterinaria
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación fullstack tipo dashboard para veterinarios: autenticación, gestión de pacientes y perfil. El proyecto está pensado para desplegarse “barato” como portfolio usando MongoDB Atlas + Vercel (Serverless Functions) sin levantar un servidor dedicado.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Registro e inicio de sesión (JWT)
+- Rutas protegidas (panel /admin)
+- CRUD de pacientes (crear, listar, editar, eliminar)
+- Edición de perfil
+- Cambio de password
+- Restablecimiento de password (modo demo)
+  - En lugar de enviar correo real, se muestra un enlace clickeable con el token
 
-## Expanding the ESLint configuration
+## Tecnologías
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Frontend**
+
+- React
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+
+**Backend (Serverless en Vercel)**
+
+- Vercel Serverless Functions (carpeta `api/`)
+- MongoDB Atlas
+- Mongoose
+- JSON Web Tokens (`jsonwebtoken`)
+- Hash de passwords con `bcryptjs`
+
+## Arquitectura (resumen)
+
+- El frontend consume el backend con Axios apuntando a `/api` por defecto.
+- En Vercel, todo lo que vive en `api/` se expone como endpoints serverless (por ejemplo: `/api/veterinarios/login`, `/api/pacientes`).
+- Para desarrollo local “fullstack” debes usar `vercel dev` (Vite por sí solo NO sirve `api/`).
+
+## Requisitos
+
+- Node.js 18+ (recomendado)
+- Cuenta de MongoDB Atlas (cluster + usuario de base de datos)
 
 ## Variables de entorno
 
-Este frontend hace llamadas al backend con Axios usando `VITE_BACKEND_URL`.
+Este repo incluye un archivo `.env.example`. Crea tu `.env` en la raíz y agrega:
 
-1. Crea un archivo `.env` en la raíz (puedes copiar `.env.example`)
-2. Define la URL de tu backend (sin `/api`), por ejemplo:
+- `MONGODB_URI` — connection string de Atlas
+- `JWT_SECRET` — string largo aleatorio
+- `MONGODB_DB` — `apv` (opcional si ya especificas la DB dentro de la URI)
 
+Generar un `JWT_SECRET` (ejemplo con Node):
+
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
-VITE_BACKEND_URL=http://localhost:4000
+
+Nota: `.env` y `.env.local` están ignorados por Git.
+
+### (Opcional) `VITE_BACKEND_URL`
+
+Si en algún momento quieres consumir un backend externo, puedes definir `VITE_BACKEND_URL` (sin `/api`) y el frontend lo usará como base URL. En deploy con Vercel normalmente NO es necesario.
+
+## Correr en local
+
+Instalar dependencias:
+
+```bash
+npm install
 ```
 
-3. Reinicia `npm run dev`
+Levantar frontend + API (recomendado):
 
-Si no está configurada, verás requests en consola como `undefined/api/...` y el navegador devolverá `404`.
+```bash
+npm run dev:vercel
+```
 
-## Deploy (portfolio) con MongoDB Atlas + Vercel
+Levantar solo frontend (no recomendado si quieres usar `/api/*`):
 
-Este repo incluye endpoints serverless en `api/` para que puedas desplegar Frontend + API en Vercel.
+```bash
+npm run dev
+```
 
-En Vercel configura estas variables de entorno:
+## Deploy en Vercel (portfolio)
 
-- `MONGODB_URI`: tu connection string de MongoDB Atlas
-- `JWT_SECRET`: un string largo aleatorio
-- (opcional) `MONGODB_DB=apv`
+1. Importa este repo en Vercel.
+2. Configura Environment Variables en Vercel:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `MONGODB_DB` (opcional)
+3. En MongoDB Atlas, confirma:
+   - El cluster está activo
+   - Network Access permite conexiones desde Vercel (para demo rápido se suele usar `0.0.0.0/0`, no recomendado para producción)
+4. Deploy.
 
-En MongoDB Atlas:
+## Nota sobre el restablecimiento de password (demo)
 
-- Asegúrate de que el cluster esté activo (no pausado)
-- En **Network Access** permite conexiones. Para demo rápido puedes usar `0.0.0.0/0` (no recomendado para producción)
+Para hacerlo simple y demostrable en portfolio, el flujo de “Olvidé mi password” no envía un correo real. En su lugar, el backend genera un token y la UI muestra un enlace clickeable para completar el restablecimiento.
 
-Notas:
+## Seguridad
 
-- En Vercel NO necesitas `VITE_BACKEND_URL` (el frontend usa `/api`).
-- Para desarrollo local con API, usa `npm run dev:vercel` (Vite por sí solo NO sirve `api/` y te dará 404 en `/api/*`).
+- No subas tus secretos a GitHub (`.env`, `.env.local`).
+- Si compartes accidentalmente una credencial, rótala en Atlas/Vercel y actualiza tus env vars.
