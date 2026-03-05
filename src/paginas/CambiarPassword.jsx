@@ -75,6 +75,7 @@ const CambiarPassword = () => {
                 className="border bg-gray-50 w-full p-2 mt-5 rounded-lg"
                 name="pwd_actual"
                 placeholder="Escribe tu password actual"
+                autoComplete="current-password"
                 onChange={(e) =>
                   setPassword({
                     ...password,
@@ -97,6 +98,7 @@ const CambiarPassword = () => {
                 className="border bg-gray-50 w-full p-2 mt-5 rounded-lg"
                 name="pwd_nuevo"
                 placeholder="Escribe tu nuevo password"
+                autoComplete="new-password"
                 onChange={(e) =>
                   setPassword({
                     ...password,

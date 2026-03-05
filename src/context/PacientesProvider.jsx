@@ -28,10 +28,10 @@ export const PacientesProvider = ({ children }) => {
         const { data } = await clienteAxios("/pacientes", config);
         setPacientes(data);
       } catch (error) {
-        console.log(error?.reponse?.data?.msg);
+        console.log(error?.response?.data?.msg);
       }
     };
-    obtenerPacientes([auth]);
+    obtenerPacientes();
   }, [auth]);
 
   const guardarPaciente = async (paciente) => {
@@ -53,7 +53,7 @@ export const PacientesProvider = ({ children }) => {
         const { data } = await clienteAxios.put(
           `/pacientes/${paciente.id}`,
           paciente,
-          config
+          config,
         );
 
         const pacientesActualizados = pacientes.map((pacienteState) => {
@@ -69,10 +69,15 @@ export const PacientesProvider = ({ children }) => {
         const { data } = await clienteAxios.post(
           "/pacientes",
           paciente,
-          config
+          config,
         );
 
-        const { createdAt, updatedAt, __v, ...pacienteAlmacenado } = data;
+        const {
+          createdAt: _createdAt,
+          updatedAt: _updatedAt,
+          __v: _v,
+          ...pacienteAlmacenado
+        } = data;
         setPacientes([pacienteAlmacenado, ...pacientes]);
       } catch (error) {
         console.log(error.response.data.msg);
@@ -104,9 +109,9 @@ export const PacientesProvider = ({ children }) => {
           },
         };
 
-        const { data } = await clienteAxios.delete(`/pacientes/${id}`, config);
+        await clienteAxios.delete(`/pacientes/${id}`, config);
         const pacientesActualizado = pacientes.filter(
-          (pacientesState) => pacientesState._id !== id
+          (pacientesState) => pacientesState._id !== id,
         );
         setPacientes(pacientesActualizado);
       } catch (error) {

@@ -19,12 +19,12 @@ const NuevoPassword = () => {
         await clienteAxios(`/veterinarios/olvide-password/${token}`);
         setAlerta({ msg: "Coloca tu Nuevo Password" });
         setTokenValido(true);
-      } catch (error) {
+      } catch {
         setAlerta({ msg: "Hubo un error con el enlace", error: true });
       }
     };
     comprobarToken();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +38,7 @@ const NuevoPassword = () => {
     }
 
     try {
-      const url = `veterinarios/olvide-password/${token}`;
+      const url = `/veterinarios/olvide-password/${token}`;
       const { data } = await clienteAxios.post(url, { password });
       setAlerta({
         msg: data.msg,
@@ -47,7 +47,7 @@ const NuevoPassword = () => {
       setPasswordModificado(true);
     } catch (error) {
       setAlerta({
-        msg: error.response.data.msg,
+        msg: error.response?.data?.msg || "No se pudo actualizar el password",
         error: true,
       });
     }
@@ -77,6 +77,7 @@ const NuevoPassword = () => {
                   type="password"
                   placeholder="Tu Nuevo Password"
                   className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

@@ -7,7 +7,9 @@ const Paciente = ({ paciente }) => {
   const formatearFecha = (fecha) => {
     const nuevaFecha = new Date(fecha);
 
-    return new Intl.DateTimeFormat("es-MX", { dateStyle: "long" }).format();
+    return new Intl.DateTimeFormat("es-MX", { dateStyle: "long" }).format(
+      nuevaFecha,
+    );
   };
 
   return (
@@ -32,7 +34,7 @@ const Paciente = ({ paciente }) => {
       <p className="font-bold uppercase text-indigo-700 my-2">
         Fecha de Alta:{" "}
         <span className="font-normal normal-case text-black">
-          {formatearFecha()}
+          {formatearFecha(fecha)}
         </span>
       </p>
 

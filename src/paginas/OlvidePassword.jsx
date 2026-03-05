@@ -2,7 +2,6 @@ import { useState } from "react";
 import Alerta from "../components/Alerta";
 import clienteAxios from "../config/axios";
 import { Link } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
 
 const OlvidePassword = () => {
   const [email, setEmail] = useState("");
@@ -18,14 +17,17 @@ const OlvidePassword = () => {
     try {
       const { data } = await clienteAxios.post(
         "/veterinarios/olvide-password",
-        { email }
+        { email },
       );
 
       setAlerta({ msg: data.msg });
 
       console.log(data);
     } catch (error) {
-      setAlerta({ msg: error.response.data.msg, error: true });
+      setAlerta({
+        msg: error.response?.data?.msg || "No se pudo enviar el email",
+        error: true,
+      });
     }
   };
 
@@ -52,6 +54,7 @@ const OlvidePassword = () => {
                 type="email"
                 placeholder="Email de Registro"
                 className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

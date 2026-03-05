@@ -42,7 +42,7 @@ const Registrar = () => {
       });
     } catch (error) {
       setAlerta({
-        msg: error.response.data.msg || "Hubo un error",
+        msg: error.response?.data?.msg || "Hubo un error",
         error: true,
       });
     }
@@ -68,6 +68,7 @@ const Registrar = () => {
               type="text"
               placeholder="Tú nombre"
               className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+              autoComplete="name"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
             />
@@ -81,6 +82,7 @@ const Registrar = () => {
               type="email"
               placeholder="Email de Registro"
               className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -94,6 +96,7 @@ const Registrar = () => {
               type="password"
               placeholder="Tú Password"
               className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -107,6 +110,7 @@ const Registrar = () => {
               type="password"
               placeholder="Repite tú Password"
               className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+              autoComplete="new-password"
               value={repetirPassword}
               onChange={(e) => setRepetirPassword(e.target.value)}
             />

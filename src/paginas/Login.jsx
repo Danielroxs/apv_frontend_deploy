@@ -31,7 +31,10 @@ const Login = () => {
       setAuth(data);
       navigate("/admin");
     } catch (error) {
-      setAlerta({ msg: error.response.data.msg, error: true });
+      setAlerta({
+        msg: error.response?.data?.msg || "No se pudo iniciar sesión",
+        error: true,
+      });
     }
   };
 
@@ -58,6 +61,7 @@ const Login = () => {
               type="email"
               placeholder="Email de Registro"
               className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -71,6 +75,7 @@ const Login = () => {
               type="password"
               placeholder="Tú password"
               className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
