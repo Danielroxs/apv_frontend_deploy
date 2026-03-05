@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const OlvidePassword = () => {
   const [email, setEmail] = useState("");
   const [alerta, setAlerta] = useState({});
+  const [resetPath, setResetPath] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +22,7 @@ const OlvidePassword = () => {
       );
 
       setAlerta({ msg: data.msg });
+      setResetPath(typeof data?.resetPath === "string" ? data.resetPath : "");
 
       console.log(data);
     } catch (error) {
@@ -28,6 +30,7 @@ const OlvidePassword = () => {
         msg: error.response?.data?.msg || "No se pudo enviar el email",
         error: true,
       });
+      setResetPath("");
     }
   };
 
@@ -66,6 +69,23 @@ const OlvidePassword = () => {
               className="bg-indigo-700 w-full p-3 px-10 rounded-xl text-white uppercase font-bold mt-5 hover:cursor-pointer hover:bg-indigo-800 md:w-auto"
             />
           </form>
+
+          {resetPath && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600 font-bold uppercase">
+                Demo: enlace de reestablecimiento
+              </p>
+              <Link
+                className="block mt-2 text-indigo-700 font-bold"
+                to={resetPath}
+              >
+                Abrir enlace
+              </Link>
+              <p className="mt-2 text-xs text-gray-500 break-all">
+                {`${window.location.origin}${resetPath}`}
+              </p>
+            </div>
+          )}
 
           <nav className="mt-10 lg:flex lg:justify-between">
             <Link className="block text-center my-5 text-gray-500" to="/">

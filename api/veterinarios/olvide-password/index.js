@@ -22,8 +22,9 @@ export default async function handler(req, res) {
   veterinario.token = crypto.randomBytes(20).toString("hex");
   await veterinario.save();
 
-  // Demo/portfolio: no enviamos email. Solo devolvemos mensaje.
+  // Demo/portfolio: no enviamos email. Devolvemos un enlace/route para reset.
   return sendJson(res, 200, {
     msg: "Hemos generado un token para reestablecer tu password (demo).",
+    resetPath: `/olvide-password/${veterinario.token}`,
   });
 }
