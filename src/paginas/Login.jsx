@@ -88,6 +88,18 @@ const Login = () => {
           />
         </form>
 
+        <div className="mt-6 p-4 border bg-gray-50 rounded-xl">
+          <p className="text-xs text-gray-600 font-bold uppercase">
+            Credenciales demo
+          </p>
+          <p className="mt-2 text-sm text-gray-700">
+            <span className="font-bold">Email:</span> danroxsll@gmail.com
+          </p>
+          <p className="mt-1 text-sm text-gray-700">
+            <span className="font-bold">Password:</span> password123
+          </p>
+        </div>
+
         <nav className="mt-10 lg:flex lg:justify-between">
           <Link
             className="block text-center my-5 text-gray-500"
