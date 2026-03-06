@@ -9,6 +9,22 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [alerta, setAlerta] = useState({});
 
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+  };
+
   const { setAuth } = useAuth();
 
   const navigate = useNavigate();
@@ -92,12 +108,31 @@ const Login = () => {
           <p className="text-xs text-gray-600 font-bold uppercase">
             Credenciales demo
           </p>
-          <p className="mt-2 text-sm text-gray-700">
-            <span className="font-bold">Email:</span> danroxsll@gmail.com
-          </p>
-          <p className="mt-1 text-sm text-gray-700">
-            <span className="font-bold">Password:</span> password123
-          </p>
+          <div className="mt-2 text-sm text-gray-700 flex items-center justify-between gap-3">
+            <p>
+              <span className="font-bold">Email:</span> danroxsll@gmail.com
+            </p>
+            <button
+              type="button"
+              onClick={() => copyToClipboard("danroxsll@gmail.com")}
+              className="text-indigo-700 font-bold hover:text-indigo-900"
+            >
+              Copiar
+            </button>
+          </div>
+
+          <div className="mt-1 text-sm text-gray-700 flex items-center justify-between gap-3">
+            <p>
+              <span className="font-bold">Password:</span> password123
+            </p>
+            <button
+              type="button"
+              onClick={() => copyToClipboard("password123")}
+              className="text-indigo-700 font-bold hover:text-indigo-900"
+            >
+              Copiar
+            </button>
+          </div>
         </div>
 
         <nav className="mt-10 lg:flex lg:justify-between">
