@@ -8,8 +8,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alerta, setAlerta] = useState({});
+  const [copiedField, setCopiedField] = useState("");
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = async (text, field) => {
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -23,6 +24,9 @@ const Login = () => {
       document.execCommand("copy");
       document.body.removeChild(textarea);
     }
+
+    setCopiedField(field);
+    window.setTimeout(() => setCopiedField(""), 1200);
   };
 
   const { setAuth } = useAuth();
@@ -112,26 +116,56 @@ const Login = () => {
             <p>
               <span className="font-bold">Email:</span> danroxsll@gmail.com
             </p>
-            <button
-              type="button"
-              onClick={() => copyToClipboard("danroxsll@gmail.com")}
-              className="text-indigo-700 font-bold hover:text-indigo-900"
-            >
-              Copiar
-            </button>
+            <div className="flex items-center gap-2">
+              {copiedField === "email" && (
+                <span className="text-xs text-gray-600">Copiado</span>
+              )}
+              <button
+                type="button"
+                onClick={() => copyToClipboard("danroxsll@gmail.com", "email")}
+                className="text-indigo-700 hover:text-indigo-900"
+                aria-label="Copiar email demo"
+                title="Copiar"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Z" />
+                  <path d="M18 5H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h8v14Z" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div className="mt-1 text-sm text-gray-700 flex items-center justify-between gap-3">
             <p>
               <span className="font-bold">Password:</span> password123
             </p>
-            <button
-              type="button"
-              onClick={() => copyToClipboard("password123")}
-              className="text-indigo-700 font-bold hover:text-indigo-900"
-            >
-              Copiar
-            </button>
+            <div className="flex items-center gap-2">
+              {copiedField === "password" && (
+                <span className="text-xs text-gray-600">Copiado</span>
+              )}
+              <button
+                type="button"
+                onClick={() => copyToClipboard("password123", "password")}
+                className="text-indigo-700 hover:text-indigo-900"
+                aria-label="Copiar password demo"
+                title="Copiar"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Z" />
+                  <path d="M18 5H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h8v14Z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
