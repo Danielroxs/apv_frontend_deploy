@@ -11,7 +11,11 @@ export const PacientesProvider = ({ children }) => {
 
   useEffect(() => {
     const obtenerPacientes = async () => {
-      if (!auth._id) return;
+      if (!auth._id) {
+        setPacientes([]);
+        setPaciente({});
+        return;
+      }
       const token = localStorage.getItem("token");
       if (!token) {
         console.log("No hay token disponible");
@@ -37,8 +41,7 @@ export const PacientesProvider = ({ children }) => {
   const guardarPaciente = async (paciente) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.log("No hay token disponible");
-      return;
+      return { msg: "No hay token disponible", error: true };
     }
 
     const config = {
@@ -61,8 +64,13 @@ export const PacientesProvider = ({ children }) => {
         });
 
         setPacientes(pacientesActualizados);
+        setPaciente({});
+        return { msg: "Paciente editado correctamente", error: false };
       } catch (error) {
-        console.log(error);
+        return {
+          msg: error.response?.data?.msg || "No se pudo editar el paciente",
+          error: true,
+        };
       }
     } else {
       try {
@@ -79,12 +87,15 @@ export const PacientesProvider = ({ children }) => {
           ...pacienteAlmacenado
         } = data;
         setPacientes([pacienteAlmacenado, ...pacientes]);
+        setPaciente({});
+        return { msg: "Paciente creado correctamente", error: false };
       } catch (error) {
-        console.log(error.response.data.msg);
+        return {
+          msg: error.response?.data?.msg || "No se pudo guardar el paciente",
+          error: true,
+        };
       }
     }
-
-    // nuevo
   };
 
   const setEdicion = (paciente) => {
@@ -94,31 +105,38 @@ export const PacientesProvider = ({ children }) => {
   const eliminarPaciente = async (id) => {
     const confirmar = confirm("¿Seguro que deseas eliminar?");
 
-    if (confirmar) {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.log("No hay token disponible");
-          return;
-        }
-
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
-        await clienteAxios.delete(`/pacientes/${id}`, config);
-        const pacientesActualizado = pacientes.filter(
-          (pacientesState) => pacientesState._id !== id,
-        );
-        setPacientes(pacientesActualizado);
-      } catch (error) {
-        console.log(error.response.data.msg);
-      }
+    if (!confirmar) {
+      return { cancelado: true };
     }
-    console.log(pacientes);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { msg: "No hay token disponible", error: true };
+      }
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      await clienteAxios.delete(`/pacientes/${id}`, config);
+      const pacientesActualizado = pacientes.filter(
+        (pacientesState) => pacientesState._id !== id,
+      );
+      setPacientes(pacientesActualizado);
+      if (paciente?._id === id) {
+        setPaciente({});
+      }
+      return { msg: "Paciente eliminado correctamente", error: false };
+    } catch (error) {
+      return {
+        msg: error.response?.data?.msg || "No se pudo eliminar el paciente",
+        error: true,
+      };
+    }
   };
 
   return (

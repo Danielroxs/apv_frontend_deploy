@@ -10,6 +10,7 @@ import NuevoPassword from "./paginas/NuevoPassword";
 import AdministrarPacientes from "./paginas/AdministrarPacientes";
 import EditarPerfil from "./paginas/EditarPerfil";
 import CambiarPassword from "./paginas/CambiarPassword";
+import PaginaNoEncontrada from "./paginas/PaginaNoEncontrada";
 
 import { AuthProvider } from "./context/AuthProvider";
 import { PacientesProvider } from "./context/PacientesProvider";
@@ -36,6 +37,8 @@ const App = () => {
               <Route path="perfil" element={<EditarPerfil />} />
               <Route path="cambiar-password" element={<CambiarPassword />} />
             </Route>
+
+            <Route path="*" element={<PaginaNoEncontrada />} />
           </Routes>
         </PacientesProvider>
       </AuthProvider>

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import Alerta from "../components/Alerta";
 import clienteAxios from "../config/axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [alerta, setAlerta] = useState({});
   const [copiedField, setCopiedField] = useState("");
 
   const copyToClipboard = async (text, field) => {
@@ -37,7 +36,7 @@ const Login = () => {
     e.preventDefault();
 
     if ([email, password].includes("")) {
-      setAlerta({ msg: "Todos los campos son obligatorios", error: true });
+      toast.error("Todos los campos son obligatorios");
       return;
     }
 
@@ -49,16 +48,18 @@ const Login = () => {
 
       localStorage.setItem("token", data.token);
       setAuth(data);
+      toast.success("Inicio de sesión exitoso");
       navigate("/admin");
     } catch (error) {
-      setAlerta({
-        msg: error.response?.data?.msg || "No se pudo iniciar sesión",
-        error: true,
-      });
+      const msgApi = error.response?.data?.msg;
+      const msgEntorno =
+        error.response?.status === 404
+          ? "API no disponible en desarrollo. Ejecuta `npm run dev:vercel` o levanta Vercel Dev en puerto 3000."
+          : "No se pudo iniciar sesión";
+
+      toast.error(msgApi || msgEntorno);
     }
   };
-
-  const { msg } = alerta;
 
   return (
     <>
@@ -70,8 +71,6 @@ const Login = () => {
       </div>
 
       <div className="mt-20 md:mt-5 shadow-lg px-5 py-10 rounded-xl bg-white">
-        {msg && <Alerta alerta={alerta} />}
-
         <form action="" onSubmit={handleSubmit}>
           <div className="my-5">
             <label className="uppercase text-gray-600 block text-xl font-bold">

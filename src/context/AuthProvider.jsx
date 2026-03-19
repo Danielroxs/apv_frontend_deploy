@@ -3,9 +3,34 @@ import clienteAxios from "../config/axios";
 
 const AuthContext = createContext();
 
+const obtenerAuthInicial = () => {
+  try {
+    const authGuardado = localStorage.getItem("auth");
+    return authGuardado ? JSON.parse(authGuardado) : {};
+  } catch (error) {
+    localStorage.removeItem("auth");
+    return {};
+  }
+};
+
+const obtenerCargandoInicial = () => {
+  const token = localStorage.getItem("token");
+  const authInicial = obtenerAuthInicial();
+
+  return !(token && authInicial?._id);
+};
+
 const AuthProvider = ({ children }) => {
-  const [cargando, setCargando] = useState(true);
-  const [auth, setAuth] = useState({});
+  const [auth, setAuth] = useState(obtenerAuthInicial);
+  const [cargando, setCargando] = useState(obtenerCargandoInicial);
+
+  useEffect(() => {
+    if (auth?._id) {
+      localStorage.setItem("auth", JSON.stringify(auth));
+    } else {
+      localStorage.removeItem("auth");
+    }
+  }, [auth]);
 
   useEffect(() => {
     const autenticarUsuario = async () => {
@@ -28,6 +53,7 @@ const AuthProvider = ({ children }) => {
         setAuth(data);
       } catch (error) {
         console.log(error.response?.data?.msg || "Error al autenticar");
+        localStorage.removeItem("token");
         setAuth({});
       }
 
@@ -38,6 +64,7 @@ const AuthProvider = ({ children }) => {
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("auth");
     setAuth({});
   };
 

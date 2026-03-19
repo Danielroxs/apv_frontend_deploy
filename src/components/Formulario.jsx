@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Alerta from "../components/Alerta";
 import usePacientes from "../hooks/usePacientes";
+import { toast } from "react-toastify";
 
 const Formulario = () => {
   const [nombre, setNombre] = useState("");
@@ -9,8 +9,6 @@ const Formulario = () => {
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
   const [sintomas, setSintomas] = useState("");
   const [id, setId] = useState(null);
-
-  const [alerta, setAlerta] = useState({});
 
   const { guardarPaciente, paciente } = usePacientes();
 
@@ -22,63 +20,87 @@ const Formulario = () => {
       setEmail(paciente.email);
       setFecha(paciente.fecha.split("T")[0]);
       setSintomas(paciente.sintomas);
+      return;
     }
+
+    setId(null);
+    setNombre("");
+    setPropietario("");
+    setEmail("");
+    setFecha(new Date().toISOString().split("T")[0]);
+    setSintomas("");
   }, [paciente]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validar el formulario
     if ([nombre, propietario, email, fecha, sintomas].includes("")) {
-      setAlerta({ msg: "Todos los campos son obligatorios", error: true });
+      toast.error("Todos los campos son obligatorios");
       return;
     }
 
-    guardarPaciente({ nombre, propietario, email, fecha, sintomas, id });
-    setAlerta({ msg: "Guardado Correctamente" });
+    const respuesta = await guardarPaciente({
+      nombre,
+      propietario,
+      email,
+      fecha,
+      sintomas,
+      id,
+    });
+
+    if (respuesta?.error) {
+      toast.error(respuesta.msg);
+      return;
+    }
+
+    toast.success(respuesta?.msg || "Paciente creado correctamente");
     // setear los campos a blancos
     setNombre("");
     setPropietario("");
     setEmail("");
     setSintomas("");
-    setFecha("");
-    setId("");
+    setFecha(new Date().toISOString().split("T")[0]);
+    setId(null);
   };
-
-  const { msg } = alerta;
 
   return (
     <>
-      <h2 className="font-black text-3xl text-center">
-        Administrador Pacientes
-      </h2>
-      <p className="text-xl mt-5 mb-10 text-center">
-        Agrega tus Pacientes y {""}{" "}
-        <span className="text-indigo-600 font-bold">Admninistralos</span>
-      </p>
+      <div className="hidden md:block">
+        <h2 className="font-black text-4xl md:text-3xl text-center leading-tight">
+          Administrador Pacientes
+        </h2>
+        <p className="text-2xl md:text-xl mt-4 mb-6 md:mb-10 text-center leading-relaxed">
+          Agrega tus Pacientes y {""}{" "}
+          <span className="text-indigo-600 font-bold">Admninistralos</span>
+        </p>
+      </div>
 
       <form
-        className="bg-white py-10 px-5 mb-10 lg:mb-5 shadow-md rounded-md"
+        className="bg-white py-8 md:py-10 px-4 md:px-5 mb-10 lg:mb-5 shadow-md rounded-xl"
         onSubmit={handleSubmit}
       >
-        <div className="mb-5">
-          <label htmlFor="nombre" className="text-gray-700 uppercase font-bold">
+        <div className="mb-4 md:mb-5">
+          <label
+            htmlFor="nombre"
+            className="text-gray-700 uppercase font-bold text-sm md:text-base"
+          >
             Nombre Mascota
           </label>
           <input
             id="nombre"
             type="text"
             placeholder="nombre de la mascota"
-            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+            className="border w-full p-3 mt-2 placeholder-gray-400 rounded-md text-base"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
         </div>
 
-        <div className="mb-5">
+        <div className="mb-4 md:mb-5">
           <label
             htmlFor="propietario"
-            className="text-gray-700 uppercase font-bold"
+            className="text-gray-700 uppercase font-bold text-sm md:text-base"
           >
             Nombre Propietario
           </label>
@@ -86,43 +108,49 @@ const Formulario = () => {
             id="propietario"
             type="text"
             placeholder="nombre del propietario"
-            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+            className="border w-full p-3 mt-2 placeholder-gray-400 rounded-md text-base"
             value={propietario}
             onChange={(e) => setPropietario(e.target.value)}
           />
         </div>
 
-        <div className="mb-5">
-          <label htmlFor="email" className="text-gray-700 uppercase font-bold">
+        <div className="mb-4 md:mb-5">
+          <label
+            htmlFor="email"
+            className="text-gray-700 uppercase font-bold text-sm md:text-base"
+          >
             Email Propietario
           </label>
           <input
             id="email"
             type="email"
             placeholder="Email del propietario"
-            className="border-1 w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+            className="border-1 w-full p-3 mt-2 placeholder-gray-400 rounded-md text-base"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
-        <div className="mb-5">
-          <label htmlFor="fecha" className="text-gray-700 uppercase font-bold">
+        <div className="mb-4 md:mb-5">
+          <label
+            htmlFor="fecha"
+            className="text-gray-700 uppercase font-bold text-sm md:text-base"
+          >
             Fecha Alta
           </label>
           <input
             id="fecha"
             type="date"
-            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
+            className="border w-full p-3 mt-2 placeholder-gray-400 rounded-md text-base"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
           />
         </div>
 
-        <div className="mb-5">
+        <div className="mb-4 md:mb-5">
           <label
             htmlFor="sintomas"
-            className="text-gray-700 uppercase font-bold"
+            className="text-gray-700 uppercase font-bold text-sm md:text-base"
           >
             Sintomas
           </label>
@@ -137,7 +165,7 @@ const Formulario = () => {
             autoComplete="off"
             required
             min="20"
-            className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md resize-none"
+            className="border w-full p-3 mt-2 placeholder-gray-400 rounded-md resize-none text-base"
             value={sintomas}
             onChange={(e) => setSintomas(e.target.value)}
           />
@@ -146,10 +174,9 @@ const Formulario = () => {
         <input
           type="submit"
           value={id ? "Guardar Cambios" : "Agregar Paciente"}
-          className="bg-indigo-600 w-full p-3 text-white uppercase font-bold cursor-pointer hover:bg-indigo-800 transition-colors"
+          className="bg-indigo-600 w-full p-3 md:p-3.5 text-white uppercase font-bold text-base cursor-pointer hover:bg-indigo-800 transition-colors rounded-md"
         />
       </form>
-      {msg && <Alerta alerta={alerta} />}
     </>
   );
 };

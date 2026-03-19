@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Alerta from "../components/Alerta";
 import clienteAxios from "../config/axios";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const NuevoPassword = () => {
   const [password, setPassword] = useState("");
-  const [alerta, setAlerta] = useState({});
   const [tokenValido, setTokenValido] = useState(false);
   const [passwordModificado, setPasswordModificado] = useState(false);
 
@@ -17,10 +16,10 @@ const NuevoPassword = () => {
     const comprobarToken = async () => {
       try {
         await clienteAxios(`/veterinarios/olvide-password/${token}`);
-        setAlerta({ msg: "Coloca tu Nuevo Password" });
+        toast.info("Coloca tu nuevo password");
         setTokenValido(true);
       } catch {
-        setAlerta({ msg: "Hubo un error con el enlace", error: true });
+        toast.error("Hubo un error con el enlace");
       }
     };
     comprobarToken();
@@ -30,30 +29,21 @@ const NuevoPassword = () => {
     e.preventDefault();
 
     if (password.length < 6) {
-      setAlerta({
-        msg: "Debe contener al menos 6 caracteres",
-        error: true,
-      });
+      toast.error("Debe contener al menos 6 caracteres");
       return;
     }
 
     try {
       const url = `/veterinarios/olvide-password/${token}`;
       const { data } = await clienteAxios.post(url, { password });
-      setAlerta({
-        msg: data.msg,
-        error: false,
-      });
+      toast.success(data.msg);
       setPasswordModificado(true);
     } catch (error) {
-      setAlerta({
-        msg: error.response?.data?.msg || "No se pudo actualizar el password",
-        error: true,
-      });
+      toast.error(
+        error.response?.data?.msg || "No se pudo actualizar el password",
+      );
     }
   };
-
-  const { msg } = alerta;
 
   return (
     <>
@@ -65,7 +55,6 @@ const NuevoPassword = () => {
       </div>
 
       <div className="mt-20 md:mt-5 shadow-lg px-5 py-10 rounded-xl bg-white">
-        {msg && <Alerta alerta={alerta} />}
         {tokenValido && (
           <>
             <form onSubmit={handleSubmit}>

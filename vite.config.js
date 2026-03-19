@@ -5,20 +5,22 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const backendTarget = env.VITE_BACKEND_URL;
+  const backendTarget = env.VITE_BACKEND_URL?.trim();
+  const proxyTarget = backendTarget || "http://localhost:3000";
 
   return {
     plugins: [react(), tailwindcss()],
-    server: backendTarget
-      ? {
-          proxy: {
-            "/api": {
-              target: backendTarget,
-              changeOrigin: true,
-              secure: false,
+    server:
+      mode === "development"
+        ? {
+            proxy: {
+              "/api": {
+                target: proxyTarget,
+                changeOrigin: true,
+                secure: false,
+              },
             },
-          },
-        }
-      : undefined,
+          }
+        : undefined,
   };
 });

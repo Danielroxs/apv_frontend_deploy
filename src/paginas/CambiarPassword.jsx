@@ -1,12 +1,11 @@
 import { useState } from "react";
 import AdminNav from "../components/AdminNav";
-import Alerta from "../components/Alerta";
 import useAuth from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const CambiarPassword = () => {
   const { guardarPassword } = useAuth();
 
-  const [alerta, setAlerta] = useState({});
   const [password, setPassword] = useState({
     pwd_actual: "",
     pwd_nuevo: "",
@@ -15,35 +14,29 @@ const CambiarPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (Object.values(password).some((campo) => campo === "")) {
-      setAlerta({
-        msg: "Todos los campos son obligatorios",
-        error: true,
-      });
+      toast.error("Todos los campos son obligatorios");
       return;
     }
 
     if (password.pwd_nuevo.length < 6) {
-      setAlerta({
-        msg: "El password debe contener al menos 6 caracteres",
-        error: true,
-      });
+      toast.error("El password debe contener al menos 6 caracteres");
       return;
     }
 
     if (password.pwd_nuevo === password.pwd_actual) {
-      setAlerta({
-        msg: "El nuevo password debe ser diferente al anterior",
-        error: true,
-      });
+      toast.error("El nuevo password debe ser diferente al anterior");
       return;
     }
 
     const respuesta = await guardarPassword(password);
 
-    setAlerta(respuesta);
-  };
+    if (respuesta?.error) {
+      toast.error(respuesta.msg);
+      return;
+    }
 
-  const { msg } = alerta;
+    toast.success(respuesta?.msg || "Password actualizado correctamente");
+  };
 
   return (
     <>
@@ -59,8 +52,6 @@ const CambiarPassword = () => {
 
       <div className="flex justify-center">
         <div className="w-full md:w-1/2 bg-white shadow rounded-lg p-5">
-          {msg && <Alerta alerta={alerta} />}
-
           <form onSubmit={handleSubmit}>
             <div className="my-3">
               <label
