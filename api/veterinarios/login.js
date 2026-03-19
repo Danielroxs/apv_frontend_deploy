@@ -4,6 +4,19 @@ import { badRequest, methodNotAllowed, sendJson } from "../_lib/res.js";
 import { signToken } from "../_lib/auth.js";
 
 export default async function handler(req, res) {
+  // Soporte para OPTIONS y CORS
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
+    return res.status(200).end();
+  }
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   await connectDb();
 
   if (req.method !== "POST") return methodNotAllowed(res);
